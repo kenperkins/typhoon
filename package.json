@@ -1,0 +1,24 @@
+{
+  "name": "typhoon",
+  "version": "0.0.1",
+  "description": "Minimalist blog engine",
+  "keywords": ["blog"],
+  "homepage": "http://github.com/cjoudrey/typhoon",
+  "author": "Christian Joudrey <cmallette@gmail.com> (http://twitter.com/cjoudrey)",
+  "repository": {
+    "type":"git",
+    "url":"http://github.com/ajaxorg/ace.git"
+  },
+  "dependencies": {
+    "connect": ">= 1.0.0",
+    "hamljs": ">= 0.4.5",
+    "node-markdown": ">= 0.1.0"
+  },
+  "devDependencies": {
+    "coffee-script": ">= 1.0.1"
+  },
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">= 0.4.0 < 0.5.0"
+  }
+}
