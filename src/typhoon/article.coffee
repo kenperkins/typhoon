@@ -9,19 +9,24 @@ Init app and setup routes
 
 app = (configs) ->
   configs ?= {}
+  
+  # Default paging to 10
+  configs.perPage ?= 10
 
+  # Setup base url and data paths
   exports.Article.baseUrl configs.baseUrl
   exports.cache.build configs.articlesDir, configs.encoding || "utf8"
   View.templatesDir configs.templatesDir
 
+  # Add configs to global template vars
   View.globals
     configs: configs
 
+  # Preload haml templates
   articleView = new View '/article.haml', configs.encoding || "utf8"
   listView = new View '/list.haml', configs.encoding || "utf8"
 
-  configs.perPage ?= 10
-
+  # Setup article listing route
   return (app) ->
     app.get /^(?:(?:\/([0-9]{4})(?:\/([0-9]{2})(?:\/([0-9]{2}))?)?)?)(?:\/?page\/([0-9]+))?\/?$/, (req, res, next) ->
       if !exports.cache.ready() then throw new Error(503)
@@ -54,6 +59,7 @@ app = (configs) ->
       listView.render res, locals, (err) ->
         if err then throw new Error(500)
 
+    # Setup article viewing route
     app.get /^(\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?)$/, (req, res, next) ->
       if !exports.cache.ready() then throw new Error(503)
 
@@ -66,11 +72,11 @@ app = (configs) ->
       articleView.render res, locals, (err) ->
         if err then throw new Error(500)
 
+    # Setup RSS feed route
     app.get '/feed.xml', (req, res, next) ->
       if !exports.cache.ready() then throw new Error(503)
       articles = []
-      for entry in exports.cache.getListing 1, 20
-        articles.push exports.cache.getArticle entry.permalink
+      articles.push exports.cache.getArticle entry.permalink for entry in exports.cache.getListing 1, 20
       options =
         locals:
           articles: articles
