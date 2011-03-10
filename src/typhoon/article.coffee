@@ -1,6 +1,7 @@
 fs = require('fs')
 markdown = require('node-markdown').Markdown
 View = require('./view').View
+haml = require('hamljs')
 
 ###
 Init app and setup routes
@@ -14,13 +15,10 @@ app = (configs) ->
   View.templatesDir configs.templatesDir
 
   View.globals
-    site_title: 'test'
-    site_url: 'yeah'
-    title: 'yahh'
+    configs: configs
 
   articleView = new View '/article.haml', configs.encoding || "utf8"
   listView = new View '/list.haml', configs.encoding || "utf8"
-  feedView = new View '/feed.haml', configs.encoding || "utf8"
 
   configs.perPage ?= 10
 
@@ -70,13 +68,37 @@ app = (configs) ->
 
     app.get '/feed.xml', (req, res, next) ->
       if !exports.cache.ready() then throw new Error(503)
-      locals =
-        articles: exports.cache.getListing 1, 25
+      articles = []
+      for entry in exports.cache.getListing 1, 20
+        articles.push exports.cache.getArticle entry.permalink
+      options =
+        locals:
+          articles: articles
+          configs: configs
+          lastBuild: exports.cache.lastBuild
+        xml: true
 
-      feedView.partial locals, (err, data) ->
-        if err then throw new Error(500)
-        res.writeHead 200, {"content-type": "text/xml"}
-        res.end data
+      feed = '''
+             !!! xml
+             %rss{version: '2.0'}
+               %channel
+                 %title= configs.title || ''
+                 %description= configs.description || ''
+                 %link= configs.baseUrl
+                 %lastBuildDate= lastBuild.rfc822()
+                 %generator typhoon
+                 %ttl 60
+                 - each article in articles
+                   %item
+                     %title= article.title()
+                     %description= article.body()
+                     %pubDate= article.date().rfc822()
+                     %guid= article.permalink()
+                     %link= article.permalink()
+            '''
+
+      res.writeHead 200, {'content-type': 'text/xml'}
+      res.end haml.render(feed, options)
 
 ###
 Cache object used by the Article object
@@ -84,6 +106,7 @@ Cache object used by the Article object
 
 class Cache
   @cache = null
+  @lastBuild = new Date()
   getListing: (page = 1, perPage = 10, startDate = null, endDate = null) ->
     if !@ready() then return []
     if page < 1 then return []
@@ -127,6 +150,7 @@ class Cache
             else
               return 0
           that.cache = cache
+          that.lastBuild = new Date()
       loadNext()
   ready: -> return !!@cache
 

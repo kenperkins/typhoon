@@ -28,15 +28,29 @@ Patch to change the format of Date.toString
 ###
 
 Date.prototype.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+Date.prototype.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 Date.prototype.pretty = ->
   return @getUTCDate() + ' ' + @months[@getUTCMonth()] + ' ' + @getUTCFullYear()
+Date.prototype.rfc822 = ->
+  padWithZero = (val) ->
+    if parseInt(val) < 10 then return "0" + val else return val
+  ret = 
+    @days[@getUTCDay()][0..2] + ', ' +
+    padWithZero @getUTCDate() + ' ' +
+    @months[@getUTCMonth()][0..2] + ' ' +
+    @getUTCFullYear() + ' ' +
+    padWithZero @getUTCHours() + ':' +
+    padWithZero @getUTCMinutes() + ':' +
+    padWithZero @getUTCSeconds() + ' ' +
+    'GMT'
+  return ret
 
 ###
 View object
 ###
 
 class View
-  constructor: (@file, @encoding) -> return
+  constructor: (@file, @encoding, @options = {}) -> return
 
   @_templatesDir: null
   @templatesDir: -> return if arguments.length > 0 then View._templatesDir = arguments[0] else View._templatesDir
@@ -54,8 +68,12 @@ class View
     layoutFile = View.templatesDir() + '/layout.haml'
     that = this
 
+    options = View.merge @options, locals: View.globals()
+
     @partial locals, (err, data) ->
-      haml.renderFile layoutFile, that.encoding, { locals: View.merge View.globals(), {body: data} }, (err, data) ->
+      options.locals = View.merge options.locals, locals
+      options.locals.body = data
+      haml.renderFile layoutFile, that.encoding, options, (err, data) ->
         if err then return callback err
         res.writeHead 200, {'content-type': 'text/html'}
         res.end data
@@ -63,8 +81,9 @@ class View
 
   partial: (locals, callback) ->
     templateFile = View.templatesDir() + @file
-    console.log locals
-    haml.renderFile templateFile, @encoding, { locals: View.merge View.globals(), locals }, (err, data) ->
+    locals = View.merge View.globals(), locals
+    options = View.merge @options, locals: locals
+    haml.renderFile templateFile, @encoding, options, (err, data) ->
       if err then return callback err
       callback null, data
 
