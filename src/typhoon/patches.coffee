@@ -23,6 +23,7 @@ haml.renderFile = (filename, encoding, options, callback) ->
 ###
 Prefix numbers less than 10 with a 0
 ###
+
 Number.prototype.pad = ->
   if this < 10
     "0" + @toString()

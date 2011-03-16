@@ -17,7 +17,7 @@ class Article
       callback null, new Article data
 
   constructor: (data) ->
-    data = data.replace(/\r\n/g, "\n")
+    data = data.replace /\r\n/g, "\n"
     meta = data.split(/\n\n/, 1).toString()
 
     @body data.substring meta.length + 2
@@ -52,7 +52,7 @@ class Article
       return date
     else
       [year, month, day] = date.split '/'
-      new Date Date.UTC(year, month - 1, day)
+      new Date Date.UTC year, month - 1, day
 
   slug: -> @meta('slug') || @title().slug()
 
@@ -66,7 +66,7 @@ class Article
       (date.getUTCMonth() + 1).pad()
       date.getUTCDate().pad(),
       @slug()
-    ].join('/')
+    ].join '/'
 
 ###
 Module Exports

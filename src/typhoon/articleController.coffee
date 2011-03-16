@@ -11,7 +11,7 @@ Init app and setup routes
 
 app = (configs) ->
   configs ?= {}
-  
+
   # Default paging to 10
   configs.perPage ?= 10
 
@@ -31,7 +31,7 @@ app = (configs) ->
   # Setup article listing route
   return (app) ->
     app.get /^(?:(?:\/([0-9]{4})(?:\/([0-9]{2})(?:\/([0-9]{2}))?)?)?)(?:\/?page\/([0-9]+))?\/?$/, (req, res, next) ->
-      if !exports.cache.ready() then throw new Error(503)
+      if !exports.cache.ready() then throw new Error 503
 
       locals =
         articles: []
@@ -43,8 +43,8 @@ app = (configs) ->
       filterPage ?= 1
 
       if req.params[0]
-        startDate = new Date Date.UTC(filterYear, filterMonth, filterDay, 0, 0, 0)
-        endDate = new Date Date.UTC(filterYear, filterMonth, filterDay, 0, 0, 0)
+        startDate = new Date Date.UTC filterYear, filterMonth, filterDay, 0, 0, 0
+        endDate = new Date Date.UTC filterYear, filterMonth, filterDay, 0, 0, 0
 
         if req.params[2]
           endDate.setUTCDate endDate.getUTCDate() + 1
@@ -56,27 +56,27 @@ app = (configs) ->
         endDate.setUTCSeconds -1
 
       for entry in exports.cache.getListing filterPage, configs.perPage, startDate ? null, endDate ? null
-        locals.articles.push(exports.cache.getArticle entry.permalink)
+        locals.articles.push exports.cache.getArticle entry.permalink
 
       listView.render res, locals, (err) ->
-        if err then throw new Error(500)
+        if err then throw new Error 500
 
     # Setup article viewing route
     app.get /^(\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?)$/, (req, res, next) ->
-      if !exports.cache.ready() then throw new Error(503)
+      if !exports.cache.ready() then throw new Error 503
 
       article = exports.cache.getArticle req.params[0]
-      if !article then throw new Error(404)
+      if !article then throw new Error 404
 
       locals =
         article: article
 
       articleView.render res, locals, (err) ->
-        if err then throw new Error(500)
+        if err then throw new Error 500
 
     # Setup RSS feed route
     app.get '/feed.xml', (req, res, next) ->
-      if !exports.cache.ready() then throw new Error(503)
+      if !exports.cache.ready() then throw new Error 503
       articles = []
       articles.push exports.cache.getArticle entry.permalink for entry in exports.cache.getListing 1, 20
       options =
@@ -105,7 +105,7 @@ app = (configs) ->
                      %link= article.permalink()
             '''
 
-      res.writeHead 200, {'content-type': 'text/xml'}
+      res.writeHead 200, 'content-type': 'text/xml'
       res.end haml.render(feed, options)
 
 ###
@@ -126,10 +126,10 @@ class Cache
       if startDate && entry.date < startDate then break
       articles.push entry
       if articles.length == perPage then break
-    return articles
+    articles
   getArticle: (permalink) ->
     if !@ready() then return null
-    return @cache.articles[permalink]
+    @cache.articles[permalink]
   putArticle: (article) ->
     @cache.articles[article.permalink true] = article
   build: (articlesDir, encoding) ->
@@ -138,7 +138,7 @@ class Cache
       listing: []
     that = this
     fs.readdir articlesDir, (err, files) ->
-      if err then throw new Error(503)
+      if err then throw new Error 503
       loadNext = ->
         file = files.shift()
         if file
@@ -152,15 +152,15 @@ class Cache
         else
           cache.listing.sort (a, b) ->
             if a.date < b.date
-              return 1
+              1
             else if a.date > b.date
-              return -1
+              -1
             else
-              return 0
+              0
           that.cache = cache
           that.lastBuild = new Date()
       loadNext()
-  ready: -> return !!@cache
+  ready: -> !!@cache
 
 ###
 Module Exports
