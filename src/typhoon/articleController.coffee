@@ -3,6 +3,7 @@ markdown = require('node-markdown').Markdown
 View = require('./view').View
 haml = require('hamljs')
 Article = require('./article').Article
+events = require 'events'
 require './patches'
 
 ###
@@ -31,8 +32,6 @@ app = (configs) ->
   # Setup article listing route
   return (app) ->
     app.get /^(?:(?:\/([0-9]{4})(?:\/([0-9]{2})(?:\/([0-9]{2}))?)?)?)(?:\/?page\/([0-9]+))?\/?$/, (req, res, next) ->
-      if !exports.cache.ready() then throw new Error 503
-
       locals =
         articles: []
 
@@ -55,66 +54,68 @@ app = (configs) ->
 
         endDate.setUTCSeconds -1
 
-      for entry in exports.cache.getListing filterPage, configs.perPage, startDate ? null, endDate ? null
-        locals.articles.push exports.cache.getArticle entry.permalink
+      exports.cache.ready ->
+        for entry in exports.cache.getListing filterPage, configs.perPage, startDate ? null, endDate ? null
+          locals.articles.push exports.cache.getArticle entry.permalink
 
-      listView.render res, locals, (err) ->
-        if err then throw new Error 500
+        listView.render res, locals, (err) ->
+          if err then throw new Error 500
 
     # Setup article viewing route
     app.get /^(\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?)$/, (req, res, next) ->
-      if !exports.cache.ready() then throw new Error 503
+      exports.cache.ready () ->
+        article = exports.cache.getArticle req.params[0]
+        if !article then throw new Error 404
 
-      article = exports.cache.getArticle req.params[0]
-      if !article then throw new Error 404
+        locals =
+          article: article
 
-      locals =
-        article: article
-
-      articleView.render res, locals, (err) ->
-        if err then throw new Error 500
+        articleView.render res, locals, (err) ->
+          if err then throw new Error 500
 
     # Setup RSS feed route
     app.get '/feed.xml', (req, res, next) ->
-      if !exports.cache.ready() then throw new Error 503
-      articles = []
-      articles.push exports.cache.getArticle entry.permalink for entry in exports.cache.getListing 1, 20
-      options =
-        locals:
-          articles: articles
-          configs: configs
-          lastBuild: exports.cache.lastBuild
-        xml: true
+      exports.cache.ready ->
+        articles = []
+        articles.push exports.cache.getArticle entry.permalink for entry in exports.cache.getListing 1, 20
+        options =
+          locals:
+            articles: articles
+            configs: configs
+            lastBuild: exports.cache.lastBuild
+          xml: true
 
-      feed = '''
-             !!! xml
-             %rss{version: '2.0'}
-               %channel
-                 %title= configs.title || ''
-                 %description= configs.description || ''
-                 %link= configs.baseUrl
-                 %lastBuildDate= lastBuild.rfc822()
-                 %generator typhoon
-                 %ttl 60
-                 - each article in articles
-                   %item
-                     %title= article.title()
-                     %description= article.body()
-                     %pubDate= article.date().rfc822()
-                     %guid= article.permalink()
-                     %link= article.permalink()
-            '''
+        feed = '''
+               !!! xml
+               %rss{version: '2.0'}
+                 %channel
+                   %title= configs.title || ''
+                   %description= configs.description || ''
+                   %link= configs.baseUrl
+                   %lastBuildDate= lastBuild.rfc822()
+                   %generator typhoon
+                   %ttl 60
+                   - each article in articles
+                     %item
+                       %title= article.title()
+                       %description= article.body()
+                       %pubDate= article.date().rfc822()
+                       %guid= article.permalink()
+                       %link= article.permalink()
+              '''
 
-      res.writeHead 200, 'content-type': 'text/xml'
-      res.end haml.render(feed, options)
+        res.writeHead 200, 'content-type': 'text/xml'
+        res.end haml.render(feed, options)
 
 ###
-Cache object used by the Article object
+Cache object used by the controller
 ###
 
 class Cache
+  @building = false
   @cache = null
   @lastBuild = new Date()
+
   getListing: (page = 1, perPage = 10, startDate = null, endDate = null) ->
     if !@ready() then return []
     if page < 1 then return []
@@ -127,11 +128,20 @@ class Cache
       articles.push entry
       if articles.length == perPage then break
     articles
+
   getArticle: (permalink) ->
     if !@ready() then return null
     @cache.articles[permalink]
+
   putArticle: (article) ->
     @cache.articles[article.permalink true] = article
+
+  constructor: ->
+    @readyEmitter = new events.EventEmitter()
+    @readyEmitter.once 'ready', () -> true # temp. fix for node issue #792
+    @readyEmitter.emit 'ready'
+    @readyEmitter.setMaxListeners 0
+
   build: (articlesDir, encoding) ->
     cache =
       articles: {}
@@ -159,8 +169,15 @@ class Cache
               0
           that.cache = cache
           that.lastBuild = new Date()
+          that.readyEmitter.emit 'ready'
       loadNext()
-  ready: -> !!@cache
+
+  ready: (callback) ->
+    return !!@cache if !callback
+    if !!@cache
+      callback()
+    else
+      @readyEmitter.once 'ready', callback
 
 ###
 Module Exports
