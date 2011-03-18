@@ -163,12 +163,10 @@ class Cache
           articleFile = articlesDir + '/' + file
           Article.fromFile articleFile, encoding, (err, article) ->
             if !err
-              fs.stat articleFile, (err, stats) ->
-                if !err
-                  permalink = article.permalink true
-                  cache.articles[permalink] = article
-                  cache.listing.push permalink: permalink, date: article.date()
-                loadNext()
+              permalink = article.permalink true
+              cache.articles[permalink] = article
+              cache.listing.push permalink: permalink, date: article.date()
+            loadNext()
         else
           cache.listing.sort (a, b) ->
             if a.date < b.date
