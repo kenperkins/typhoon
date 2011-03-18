@@ -16,6 +16,9 @@ app = (configs) ->
   # Default paging to 10
   configs.perPage ?= 10
 
+  # Default rebuild secret
+  configs.rebuildSecret ?= 'typhoon'
+
   # Setup base url and data paths
   Article.baseUrl configs.baseUrl
   exports.cache.build configs.articlesDir, configs.encoding || "utf8"
@@ -29,7 +32,7 @@ app = (configs) ->
   articleView = new View '/article.haml', configs.encoding || "utf8"
   listView = new View '/list.haml', configs.encoding || "utf8"
 
-  # Setup article listing route
+  # Article listing
   return (app) ->
     app.get /^(?:(?:\/([0-9]{4})(?:\/([0-9]{2})(?:\/([0-9]{2}))?)?)?)(?:\/?page\/([0-9]+))?\/?$/, (req, res, next) ->
       locals =
@@ -61,7 +64,7 @@ app = (configs) ->
         listView.render res, locals, (err) ->
           if err then throw new Error 500
 
-    # Setup article viewing route
+    # View article
     app.get /^(\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?)$/, (req, res, next) ->
       exports.cache.ready () ->
         article = exports.cache.getArticle req.params[0]
@@ -73,7 +76,7 @@ app = (configs) ->
         articleView.render res, locals, (err) ->
           if err then throw new Error 500
 
-    # Setup RSS feed route
+    # RSS feed
     app.get '/feed.xml', (req, res, next) ->
       exports.cache.ready ->
         articles = []
@@ -107,14 +110,20 @@ app = (configs) ->
         res.writeHead 200, 'content-type': 'text/xml'
         res.end haml.render(feed, options)
 
+    # Rebuild cache
+    app.get '/cache-rebuild/' + configs.rebuildSecret, (req, res, next) ->
+      exports.cache.build configs.articlesDir, configs.encoding || "utf8"
+      res.writeHead 200, 'content-type': 'text/html'
+      res.end 'OK'
+
 ###
 Cache object used by the controller
 ###
 
 class Cache
-  @building = false
   @cache = null
-  @lastBuild = new Date()
+  @lastBuildArticlesDir = null
+  @lastBuildEncoding = null
 
   getListing: (page = 1, perPage = 10, startDate = null, endDate = null) ->
     if !@ready() then return []
@@ -139,7 +148,6 @@ class Cache
   constructor: ->
     @readyEmitter = new events.EventEmitter()
     @readyEmitter.once 'ready', () -> true # temp. fix for node issue #792
-    @readyEmitter.emit 'ready'
     @readyEmitter.setMaxListeners 0
 
   build: (articlesDir, encoding) ->
@@ -155,10 +163,12 @@ class Cache
           articleFile = articlesDir + '/' + file
           Article.fromFile articleFile, encoding, (err, article) ->
             if !err
-              permalink = article.permalink true
-              cache.articles[permalink] = article
-              cache.listing.push permalink: permalink, date: article.date()
-            loadNext()
+              fs.stat articleFile, (err, stats) ->
+                if !err
+                  permalink = article.permalink true
+                  cache.articles[permalink] = article
+                  cache.listing.push permalink: permalink, date: article.date()
+                loadNext()
         else
           cache.listing.sort (a, b) ->
             if a.date < b.date
@@ -168,7 +178,6 @@ class Cache
             else
               0
           that.cache = cache
-          that.lastBuild = new Date()
           that.readyEmitter.emit 'ready'
       loadNext()
 
