@@ -40,6 +40,9 @@ Date.prototype.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "
 Date.prototype.pretty = ->
   @months[@getUTCMonth()] + ' ' + @getUTCDate() + ', ' + @getUTCFullYear()
 
+Date.prototype.isoformat = ->
+  @getUTCFullYear() + '-' + (@getUTCMonth() + 1).pad() + '-' + @getUTCDate().pad()
+
 ###
 Format a date to RFC822 (used in feeds)
 ###

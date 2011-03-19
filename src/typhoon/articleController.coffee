@@ -1,9 +1,8 @@
-fs = require('fs')
-markdown = require('node-markdown').Markdown
+fs = require 'fs'
 View = require('./view').View
-haml = require('hamljs')
+haml = require 'hamljs'
 Article = require('./article').Article
-events = require 'events'
+path = require 'path'
 require './patches'
 
 ###
@@ -16,12 +15,14 @@ app = (configs) ->
   # Default paging to 10
   configs.perPage ?= 10
 
-  # Default rebuild secret
-  configs.rebuildSecret ?= 'typhoon'
+  # Default extension
+  configs.ext ?= '.txt'
+
+  # Default encoding
+  configs.encoding ?= 'utf8'
 
   # Setup base url and data paths
   Article.baseUrl configs.baseUrl
-  exports.cache.build configs.articlesDir, configs.encoding || "utf8"
   View.templatesDir configs.templatesDir
 
   # Add configs to global template vars
@@ -29,8 +30,30 @@ app = (configs) ->
     configs: configs
 
   # Preload haml templates
-  articleView = new View '/article.haml', configs.encoding || "utf8"
-  listView = new View '/list.haml', configs.encoding || "utf8"
+  articleView = new View '/article.haml', configs.encoding
+  listView = new View '/list.haml', configs.encoding
+
+  getArticles = (filter, page = 1, perPage = 15, callback) ->
+    limit = perPage
+    offset = page * perPage - perPage
+    fs.readdir configs.articlesDir, (err, files) ->
+      return callback err if err
+      articles = []
+      errors = 0
+      processed = 0
+      files = files.filter filter if filter
+      for file, i in files.sort().reverse()
+        continue if i < offset
+        processed++
+        Article.fromFile configs.articlesDir + '/' + file, configs.encoding, (err, article) ->
+          if err
+            errors++
+          else
+            articles.push article
+          if articles.length + errors == processed
+            callback null, articles
+        break if processed == limit
+      return callback null, articles if processed == 0
 
   # Article listing
   return (app) ->
@@ -40,35 +63,26 @@ app = (configs) ->
 
       [filterYear, filterMonth, filterDay, filterPage] = req.params
 
-      filterMonth = if !filterMonth then 0 else filterMonth - 1
-      filterDay ?= 1
-      filterPage ?= 1
+      filter = [filterYear, filterMonth, filterDay]
+        .filter (v) ->
+          typeof(v) != 'undefined'
+        .join '-'
 
-      if req.params[0]
-        startDate = new Date Date.UTC filterYear, filterMonth, filterDay, 0, 0, 0
-        endDate = new Date Date.UTC filterYear, filterMonth, filterDay, 0, 0, 0
+      if filter
+        filterPattern = new RegExp '^' + filter
+        filter = (file) -> file.match filterPattern
 
-        if req.params[2]
-          endDate.setUTCDate endDate.getUTCDate() + 1
-        else if req.params[1]
-          endDate.setUTCMonth endDate.getUTCMonth() + 1
-        else
-          endDate.setUTCFullYear endDate.getUTCFullYear() + 1
-
-        endDate.setUTCSeconds -1
-
-      exports.cache.ready ->
-        for entry in exports.cache.getListing filterPage, configs.perPage, startDate ? null, endDate ? null
-          locals.articles.push exports.cache.getArticle entry.permalink
-
+      getArticles filter, filterPage, configs.perPage, (err, articles) ->
+        locals.articles = articles
+        locals.page = filterPage
+        locals.filter = [filterYear, filterMonth, filterDay]
         listView.render res, locals, (err) ->
           if err then throw new Error 500
 
     # View article
-    app.get /^(\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?)$/, (req, res, next) ->
-      exports.cache.ready () ->
-        article = exports.cache.getArticle req.params[0]
-        if !article then throw new Error 404
+    app.get /^\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?$/, (req, res, next) ->
+      Article.fromFile configs.articlesDir + '/' + path.normalize(req.params.join('-')) + configs.ext, configs.encoding, (err, article) ->
+        if err then throw new Error 404
 
         locals =
           article: article
@@ -78,14 +92,11 @@ app = (configs) ->
 
     # RSS feed
     app.get '/feed.xml', (req, res, next) ->
-      exports.cache.ready ->
-        articles = []
-        articles.push exports.cache.getArticle entry.permalink for entry in exports.cache.getListing 1, 20
+      getArticles null, 1, 25, (err, articles) ->
         options =
           locals:
             articles: articles
-            configs: configs
-            lastBuild: exports.cache.lastBuild
+            lastBuild: new Date()
           xml: true
 
         feed = '''
@@ -110,86 +121,8 @@ app = (configs) ->
         res.writeHead 200, 'content-type': 'text/xml'
         res.end haml.render(feed, options)
 
-    # Rebuild cache
-    app.get '/cache-rebuild/' + configs.rebuildSecret, (req, res, next) ->
-      exports.cache.build configs.articlesDir, configs.encoding || "utf8"
-      res.writeHead 200, 'content-type': 'text/html'
-      res.end 'OK'
-
-###
-Cache object used by the controller
-###
-
-class Cache
-  @cache = null
-  @lastBuildArticlesDir = null
-  @lastBuildEncoding = null
-
-  getListing: (page = 1, perPage = 10, startDate = null, endDate = null) ->
-    if !@ready() then return []
-    if page < 1 then return []
-    offset = (page * perPage) - perPage
-    articles = []
-    for entry, i in @cache.listing
-      if i < offset then continue
-      if endDate && entry.date > endDate then continue
-      if startDate && entry.date < startDate then break
-      articles.push entry
-      if articles.length == perPage then break
-    articles
-
-  getArticle: (permalink) ->
-    if !@ready() then return null
-    @cache.articles[permalink]
-
-  putArticle: (article) ->
-    @cache.articles[article.permalink true] = article
-
-  constructor: ->
-    @readyEmitter = new events.EventEmitter()
-    @readyEmitter.once 'ready', () -> true # temp. fix for node issue #792
-    @readyEmitter.setMaxListeners 0
-
-  build: (articlesDir, encoding) ->
-    cache =
-      articles: {}
-      listing: []
-    that = this
-    fs.readdir articlesDir, (err, files) ->
-      if err then throw new Error 503
-      loadNext = ->
-        file = files.shift()
-        if file
-          articleFile = articlesDir + '/' + file
-          Article.fromFile articleFile, encoding, (err, article) ->
-            if !err
-              permalink = article.permalink true
-              cache.articles[permalink] = article
-              cache.listing.push permalink: permalink, date: article.date()
-            loadNext()
-        else
-          cache.listing.sort (a, b) ->
-            if a.date < b.date
-              1
-            else if a.date > b.date
-              -1
-            else
-              0
-          that.cache = cache
-          that.readyEmitter.emit 'ready'
-      loadNext()
-
-  ready: (callback) ->
-    return !!@cache if !callback
-    if !!@cache
-      callback()
-    else
-      @readyEmitter.once 'ready', callback
-
 ###
 Module Exports
 ###
 
-exports.Cache = Cache
-exports.cache = new Cache()
 exports.app = app

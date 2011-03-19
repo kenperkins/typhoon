@@ -1,5 +1,6 @@
 fs = require 'fs'
-
+path = require 'path'
+markdown = require('node-markdown').Markdown
 require './patches'
 
 class Article
@@ -14,7 +15,12 @@ class Article
   @fromFile: (file, encoding, callback) ->
     fs.readFile file, encoding, (err, data) ->
       return callback err if err
-      callback null, new Article data
+      article = new Article data
+      if !article.meta 'date'
+        date = path.basename(file).match(/^([0-9]{4}-[0-9]{2}-[0-9]{2})-/)[1].replace(/-/g, '/')
+        article.meta 'date', date
+      article.meta 'slug', path.basename(file, path.extname(file)).match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}-(.*)$/)[1]
+      callback null, article
 
   constructor: (data) ->
     data = data.replace /\r\n/g, "\n"
@@ -31,7 +37,7 @@ class Article
       @_body = body
       this
     else
-      @_body
+      markdown @_body
 
   meta: (key = null, value = null) ->
     @_meta = {} if !@_meta
