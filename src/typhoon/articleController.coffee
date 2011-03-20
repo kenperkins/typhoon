@@ -64,8 +64,7 @@ app = (configs) ->
       [filterYear, filterMonth, filterDay, filterPage] = req.params
 
       filter = [filterYear, filterMonth, filterDay]
-        .filter (v) ->
-          typeof(v) != 'undefined'
+        .filter((v) -> typeof(v) != 'undefined')
         .join '-'
 
       if filter
@@ -77,22 +76,23 @@ app = (configs) ->
         locals.page = filterPage
         locals.filter = [filterYear, filterMonth, filterDay]
         listView.render res, locals, (err) ->
-          if err then throw new Error 500
+          return next(new Error 500, err) if err
 
     # View article
     app.get /^\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*)\/?$/, (req, res, next) ->
       Article.fromFile configs.articlesDir + '/' + path.normalize(req.params.join('-')) + configs.ext, configs.encoding, (err, article) ->
-        if err then throw new Error 404
+        return next(new Error 404, err) if err
 
         locals =
           article: article
 
         articleView.render res, locals, (err) ->
-          if err then throw new Error 500
+          return next(new Error 500, err) if err
 
     # RSS feed
     app.get '/feed.xml', (req, res, next) ->
       getArticles null, 1, 25, (err, articles) ->
+        return next(new Error 500, err) if err
         options =
           locals:
             articles: articles
