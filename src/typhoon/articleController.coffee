@@ -98,9 +98,22 @@ app = (configs) ->
       filterPage or= 1
 
       getArticles filter, filterPage, configs.perPage, (err, articles, hasMore) ->
+        if filterParams.length > 0
+          locals.action = 'archives'
+          if filterDay
+            locals.archivesType = 'Daily'
+            locals.archivesLabel = new Date(Date.UTC(filterYear, filterMonth - 1, filterDay)).pretty()
+          else if filterMonth
+            locals.archivesType = 'Monthly'
+            locals.archivesLabel = Date.prototype.months[filterMonth - 1] + ' ' + filterYear
+          else
+            locals.archivesType = 'Yearly'
+            locals.archivesLabel = filterYear
+        else
+          locals.action = 'listing'
         locals.articles = articles
         locals.page = parseInt filterPage
-        locals.filter = [filterYear, filterMonth, filterDay]
+        locals.filter = filterParams
         locals.paging = {}
         pageLink = (page) ->
           url = configs.baseUrl + '/' + filterParams.join('/')
