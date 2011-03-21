@@ -15,7 +15,7 @@ listen = (configs) ->
   server.use connect.favicon configs.favicon if configs.favicon
   server.use connect.static configs.staticDir if configs.staticDir
   server.use connect.router exports.controllers.article.app configs
-  server.use connect.errorHandler stack: configs.env == 'dev', dump: configs.env == 'dev'
+  server.use connect.errorHandler stack: configs.env == 'dev', dump: true, message: configs.env == 'dev'
 
   server.listen configs.port || 8080, configs.host || '127.0.0.1'
 
