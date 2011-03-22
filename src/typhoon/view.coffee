@@ -1,6 +1,6 @@
 haml = require 'hamljs'
 utils = require './utils'
-
+markdown = require('node-markdown').Markdown
 require './patches'
 
 ###
@@ -25,6 +25,7 @@ class View
     @partial locals, (err, data) ->
       options.locals = utils.merge options.locals, locals
       options.locals.body = data
+      options.locals.__proto__ = Helpers
       haml.renderFile layoutFile, that.encoding, options, (err, data) ->
         if err then return callback err
         res.writeHead 200, 'content-type': 'text/html'
@@ -35,12 +36,22 @@ class View
     templateFile = View.templatesDir() + @file
     locals = utils.merge View.globals(), locals
     options = utils.merge @options, locals: locals
+    options.locals.__proto__ = Helpers
     haml.renderFile templateFile, @encoding, options, (err, data) ->
       if err then return callback err
       callback null, data
+
+###
+View helpers
+###
+
+class Helpers
+  @markdown: (str) -> markdown str
+  @summary: (body) -> body.split('<!-- more -->')[0].replace /\.$/, '&hellip;'
 
 ###
 Module Exports
 ###
 
 exports.View = View
+exports.Helpers = Helpers

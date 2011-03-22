@@ -1,6 +1,5 @@
 fs = require 'fs'
 path = require 'path'
-markdown = require('node-markdown').Markdown
 require './patches'
 
 class Article
@@ -37,7 +36,7 @@ class Article
       @_body = body
       this
     else
-      markdown @_body
+      @_body
 
   meta: (key = null, value = null) ->
     @_meta = {} if !@_meta

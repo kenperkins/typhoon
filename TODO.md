@@ -1,7 +1,5 @@
 # TODO
 
-- Add helpers: markdown, excerpt
-- Article.body() should return raw body
 - Add ETag and cache headers
 - Add author archives i.e. /author/chris
 - Allow skinning of error pages

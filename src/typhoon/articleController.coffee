@@ -1,7 +1,8 @@
 fs = require 'fs'
 View = require('./view').View
-haml = require 'hamljs'
+Helpers = require('./view').Helpers
 Article = require('./article').Article
+haml = require 'hamljs'
 path = require 'path'
 require './patches'
 
@@ -39,47 +40,23 @@ app = (configs) ->
     fs.readdir configs.articlesDir, (err, files) ->
       return callback err if err
       articles = []
-      errors = 0
-      queued = 0
       filter or= (() -> true)
       files = files.filter(filter).sort().reverse()
-      filesLen = files.length
-
-      console.log 'Filtered and sorted'
-      console.log files
-      console.log '------------------------------------'
 
       i = 0
       loadArticles = (done) ->
-        console.log i, files
         i++
         file = files.shift()
         return loadArticles done if (i - 1) < offset
         return done(false) if !file
         return done(file || files.length > 0) if articles.length == limit
         Article.fromFile configs.articlesDir + '/' + file, configs.encoding, (err, article) ->
-          console.log 'error: ', err
           articles.push article if !err
           loadArticles done
         return
 
       loadArticles (hasMore) ->
         callback null, articles, hasMore
-
-      ###
-      for file, i in files
-        continue if i < offset
-        queued++
-        Article.fromFile configs.articlesDir + '/' + file, configs.encoding, (err, article) ->
-          if err
-            errors++
-          else
-            articles.push article
-          callback null, articles if articles.length + errors == queued
-        break if queued == limit
-      hasMore = true if offset + articles.length < files.length
-      return callback null, articles, hasMore if queued == 0
-      ###
 
   # Article listing
   return (app) ->
@@ -143,8 +120,11 @@ app = (configs) ->
         options =
           locals:
             articles: articles
-            lastBuild: new Date()
+            lastBuild: new Date(),
+            configs: configs
           xml: true
+
+        options.locals.__proto__ = Helpers
 
         feed = '''
                !!! xml
@@ -159,7 +139,7 @@ app = (configs) ->
                    - each article in articles
                      %item
                        %title= article.title()
-                       %description= article.body()
+                       %description= markdown(article.body())
                        %pubDate= article.date().rfc822()
                        %guid= article.permalink()
                        %link= article.permalink()
