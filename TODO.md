@@ -1,5 +1,6 @@
 # TODO
 
+- Crash: Article.fromFile causes a crash when filename is in bad format.
 - Add ETag and cache headers
 - Add author archives i.e. /author/chris
 - Allow skinning of error pages
