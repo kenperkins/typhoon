@@ -14,11 +14,17 @@ class Article
   @fromFile: (file, encoding, callback) ->
     fs.readFile file, encoding, (err, data) ->
       return callback err if err
+
+      fileMatch = path.basename(file).match(/^([0-9]{4}-[0-9]{2}-[0-9]{2})-(.*)\..*$/)
+      return callback 'Invalid filename format' if !fileMatch
+
       article = new Article data
-      if !article.meta 'date'
-        date = path.basename(file).match(/^([0-9]{4}-[0-9]{2}-[0-9]{2})-/)[1].replace(/-/g, '/')
-        article.meta 'date', date
-      article.meta 'slug', path.basename(file, path.extname(file)).match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}-(.*)$/)[1]
+
+      date = fileMatch[1].replace /-/g, '/'
+      article.meta 'date', date
+
+      article.meta 'slug', fileMatch[2]
+
       callback null, article
 
   constructor: (data) ->
