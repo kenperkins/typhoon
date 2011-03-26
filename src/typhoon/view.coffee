@@ -8,7 +8,8 @@ View object
 ###
 
 class View
-  constructor: (@file, @encoding, @options = {}) -> return
+  constructor: (@file, @encoding, @options = {}, @absolute_path = false) ->
+    @file = View.templatesDir() + @file if !@absolute_path
 
   @_templatesDir: null
   @templatesDir: -> return if arguments.length > 0 then View._templatesDir = arguments[0] else View._templatesDir
@@ -33,7 +34,7 @@ class View
         callback()
 
   partial: (locals, callback) ->
-    templateFile = View.templatesDir() + @file
+    templateFile = @file
     locals = utils.merge View.globals(), locals
     options = utils.merge @options, locals: locals
     options.locals.__proto__ = Helpers

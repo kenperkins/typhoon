@@ -33,6 +33,7 @@ app = (configs) ->
   # Preload haml templates
   articleView = new View '/article.haml', configs.encoding
   listView = new View '/list.haml', configs.encoding
+  feedView = new View __dirname + '/feed.haml', configs.encoding, {xml: true}, true
 
   getArticles = (filter, page = 1, perPage = 15, callback) ->
     limit = perPage
@@ -117,36 +118,13 @@ app = (configs) ->
     app.get '/feed.xml', (req, res, next) ->
       getArticles null, 1, 25, (err, articles) ->
         return next(new Error 500, err) if err
-        options =
-          locals:
-            articles: articles
-            lastBuild: new Date(),
-            configs: configs
-          xml: true
-
-        options.locals.__proto__ = Helpers
-
-        feed = '''
-               !!! xml
-               %rss{version: '2.0'}
-                 %channel
-                   %title= configs.title || ''
-                   %description= configs.description || ''
-                   %link= configs.baseUrl
-                   %lastBuildDate= lastBuild.rfc822()
-                   %generator typhoon
-                   %ttl 60
-                   - each article in articles
-                     %item
-                       %title= article.title()
-                       %description= markdown(article.body())
-                       %pubDate= article.date().rfc822()
-                       %guid= article.permalink()
-                       %link= article.permalink()
-              '''
-
-        res.writeHead 200, 'content-type': 'text/xml'
-        res.end haml.render(feed, options)
+        locals =
+          articles: articles
+          lastBuild: new Date()
+        feedView.partial locals, (err, data) ->
+          return next(new Error 500, err) if err
+          res.writeHead 200, 'content-type': 'text/xml'
+          res.end data
 
 ###
 Module Exports
