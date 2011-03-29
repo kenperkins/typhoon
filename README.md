@@ -21,3 +21,5 @@ The minimalist blog engine for Node.js
 # Mentions
 
 Typhoon was inspired by [Toto](//github.com/cloudhead/toto) (Ruby) and [Wheat](//github.com/creationix/wheat) (Node.js). Go check them out!
+
+Copyright (c) 2011 Christian Joudrey. See LICENSE for details.
