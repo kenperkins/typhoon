@@ -7,7 +7,7 @@
   "author": "Christian Joudrey <cmallette@gmail.com> (http://twitter.com/cjoudrey)",
   "repository": {
     "type":"git",
-    "url":"http://github.com/ajaxorg/ace.git"
+    "url":"http://github.com/cjoudrey/typhoon.git"
   },
   "dependencies": {
     "connect": ">= 1.0.0",
