@@ -16,7 +16,7 @@ The minimalist blog engine for Node.js
 
 # Blogs using Typhoon
 
-- (http://blog.ht4.ca)[http://blog.ht4.ca] ([Source](//github.com/cjoudrey/blog.ht4.ca))
+- [http://blog.ht4.ca](http://blog.ht4.ca) ([Source](//github.com/cjoudrey/blog.ht4.ca))
 
 # Mentions
 
