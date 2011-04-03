@@ -1,0 +1,4 @@
+*.md
+Cakefile
+test/
+src/
