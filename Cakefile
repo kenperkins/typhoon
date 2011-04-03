@@ -34,3 +34,11 @@ clean = (cb) ->
   exec 'rm -rf lib', cb
 
 task 'clean', 'Remove temporary files and current build', -> clean onerror
+
+test = (cb) -> true
+
+task 'test', 'Test the working version', -> test onerror
+
+publish = (cb) -> true
+
+task 'publish', 'Prepare build and push new version to NPM', -> publish onerror
