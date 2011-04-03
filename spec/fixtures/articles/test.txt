@@ -1,5 +1,0 @@
-title: Test
-date: 2010/01/30
-custom: 1234
-
-# test
