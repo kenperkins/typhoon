@@ -1,4 +1,5 @@
-exec = require('child_process').exec
+{exec} = require 'child_process'
+{series} = require 'async'
 
 process.env['PATH'] = "node_modules/.bin:#{process.env['PATH']}"
 
@@ -15,27 +16,16 @@ onerror = (err) ->
     process.stdout.write "#{red}#{err.stack}#{reset}\n"
     process.exit -1
 
-buildSteps = [
-  [
-    'Compiling CoffeeScript to JavaScript ...', (cb) ->
-      exec 'rm -rf lib && coffee -c -b -o lib src', cb
-  ],
-  [
-    'Copying dependencies ...', (cb) ->
-      exec 'cp src/typhoon/feed.haml lib/typhoon/', cb
-  ]
-]
-
 build = (cb) ->
-  done = ->
-    log 'Done!', green
-  doStep = (i) ->
-    return done() if i == buildSteps.length
-    log buildSteps[i][0], green
-    buildSteps[i][1] (err) ->
-      cb err
-      doStep i + 1
-  doStep 0
+  series [
+    clean
+    (cb) ->
+      log 'Compiling CoffeeScript to Javascript', green
+      exec 'coffee -c -b -o lib src', cb
+    (cb) ->
+      log 'Copying dependencies', green
+      exec 'cp src/typhoon/feed.haml lib/typhoon/', cb
+  ], cb
 
 task 'build', 'Build Typhoon', -> build onerror
 
