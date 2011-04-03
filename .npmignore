@@ -1,4 +1,4 @@
 *.md
 Cakefile
-test/
-src/
+test
+src
