@@ -32,6 +32,8 @@ Keep in mind, if you compile it manually you will need to download the dependenc
 
 If you are anxious to get started simply clone the repository [cjoudrey/blog.ht4.ca](https://github.com/cjoudrey/blog.ht4.ca) which comes with everything to get you started.
 
+    git clone git@github.com:cjoudrey/blog.ht4.ca.git
+
 Otherwise you can set up your blog manually as follow.
 
 The first thing you will need to get started is the following directory structure:
