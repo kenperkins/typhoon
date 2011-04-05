@@ -1,6 +1,7 @@
 haml = require 'hamljs'
 utils = require './utils'
 markdown = require('node-markdown').Markdown
+crypto = require 'crypto'
 require './patches'
 
 ###
@@ -49,6 +50,10 @@ View helpers
 class Helpers
   @markdown: (str) -> markdown str
   @summary: (body) -> body.split('<!-- more -->')[0].replace /\.$/, '&hellip;'
+  @gravatar: (email, size = 50) ->
+    'http://www.gravatar.com/avatar/' +
+    crypto.createHash('md5').update(email.trim().toLowerCase()).digest('hex') +
+    "?r=pg&s=#{size}.jpg&d=identicon"
 
 ###
 Module Exports
