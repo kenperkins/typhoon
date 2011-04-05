@@ -49,14 +49,14 @@ The first thing you will need to get started is the following directory structur
     |- configs.js          # Typhoon configurations
     |- index.js            # Node entry-point
 
-# Node entry-point `index.js`
+# Node entry-point - index.js
 
 The node entry-point is the script you will be executing with node.
 
     var typhoon = require('typhoon');
     typhoon.listen(require('./configs'));
 
-# Typhoon configurations `configs.js`
+# Typhoon configurations - configs.js
 
 The configurations file is a module that exports an object with the following format:
 
@@ -109,6 +109,22 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.<!-- more -->
     Maecenas justo neque, dictum eget accumsan non, luctus ac lacus.
     Phasellus ac erat metus, et sagittis dolor.
+
+# Template helpers
+
+Several template helpers are available within a template such as:
+
+  * markdown(str) -> returns: Markdown encoded string
+  * summary(body) -> returns: Content in `body` preceding `<!-- more -->`
+  * gravatar(email, size=50) -> returns: URL to gravatar
+
+These helpers can be overrided and extended as such:
+
+    var typhoon = require('typhoon');
+
+    typhoon.Helpers.github = function(name) {
+      return 'https://github.com/' + name;
+    };
 
 # Blogs using Typhoon
 
