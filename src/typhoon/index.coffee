@@ -38,3 +38,4 @@ Module Exports
 
 exports.listen = listen
 exports.controllers = controllers
+exports.Helpers = require('./view').Helpers
