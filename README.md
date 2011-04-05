@@ -112,11 +112,11 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
 
 # Template helpers
 
-Several template helpers are available within a template such as:
+Several template helpers are available such as:
 
-  * markdown(str) -> returns: Markdown encoded string
-  * summary(body) -> returns: Content in `body` preceding `<!-- more -->`
-  * gravatar(email, size=50) -> returns: URL to gravatar
+  * **markdown(str)** - returns: Markdown encoded string
+  * **summary(body)** - returns: Content in `body` preceding `<!-- more -->`
+  * **gravatar(email, size=50)** - returns: URL to gravatar
 
 These helpers can be overrided and extended as such:
 
