@@ -69,6 +69,15 @@ app = (configs) ->
 
       filterParams = [filterYear, filterMonth, filterDay].filter((v) -> typeof(v) != 'undefined')
 
+      validateDate = (year, month, day) ->
+        year or= 2011
+        month or= 1
+        day or= 1
+        date = new Date(Date.UTC(year, month - 1, day))
+        date.getUTCFullYear() == parseInt(year) and date.getUTCMonth() + 1 == parseInt(month) and date.getUTCDate() == parseInt(day)
+
+      return next(new Error 404) if !validateDate filterYear, filterMonth, filterDay
+
       if filterParams.length > 0
         filterPattern = new RegExp '^' + filterParams.join '-'
         filter = (file) -> file.match filterPattern
@@ -94,7 +103,6 @@ app = (configs) ->
         locals.page = parseInt filterPage
         locals.filter = filterParams
         locals.paging = {}
-        console.dir locals
         pageLink = (page) ->
           url = configs.baseUrl + '/' + filterParams.join('/')
           url = url + 'page/' + page if page > 1
