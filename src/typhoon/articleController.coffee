@@ -87,12 +87,14 @@ app = (configs) ->
           else
             locals.archivesType = 'Yearly'
             locals.archivesLabel = filterYear
+          locals.title = locals.archivesLabel
         else
           locals.action = 'listing'
         locals.articles = articles
         locals.page = parseInt filterPage
         locals.filter = filterParams
         locals.paging = {}
+        console.dir locals
         pageLink = (page) ->
           url = configs.baseUrl + '/' + filterParams.join('/')
           url = url + 'page/' + page if page > 1
@@ -110,6 +112,7 @@ app = (configs) ->
 
         locals =
           article: article
+          title: article.title()
 
         articleView.render res, locals, (err) ->
           return next(new Error 500, err) if err
