@@ -83,4 +83,4 @@ class Article
 Module Exports
 ###
 
-exports.Article = Article
+module.exports.Article = Article

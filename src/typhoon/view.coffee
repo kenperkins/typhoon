@@ -59,5 +59,5 @@ class Helpers
 Module Exports
 ###
 
-exports.View = View
-exports.Helpers = Helpers
+module.exports.View = View
+module.exports.Helpers = Helpers

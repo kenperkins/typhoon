@@ -141,4 +141,4 @@ app = (configs) ->
 Module Exports
 ###
 
-exports.app = app
+module.exports.app = app

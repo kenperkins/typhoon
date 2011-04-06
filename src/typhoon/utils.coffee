@@ -4,4 +4,4 @@ merge = (a, b) ->
   o[k] = v for k, v of b
   o
 
-exports.merge = merge
+module.exports.merge = merge

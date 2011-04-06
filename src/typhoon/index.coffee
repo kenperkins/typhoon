@@ -36,6 +36,6 @@ listen = (configs) ->
 Module Exports
 ###
 
-exports.listen = listen
-exports.controllers = controllers
-exports.Helpers = require('./view').Helpers
+module.exports.listen = listen
+module.exports.controllers = controllers
+module.exports.Helpers = require('./view').Helpers
