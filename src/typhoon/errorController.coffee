@@ -1,4 +1,4 @@
-{View} = require './view'
+View = require './view'
 
 module.exports =  (configs) ->
   errorView = new View 'error', configs.encoding
