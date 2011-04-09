@@ -1,5 +1,10 @@
+0.2.2 / 2011-04-09
+==================
+
+  * Fixed an issue with an uninitialized variable
+
 0.2.1 / 2011-04-09
-=================
+==================
 
   * Fixed a typo in `view.coffee`
 
