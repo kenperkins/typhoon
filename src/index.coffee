@@ -1,1 +1,1 @@
-module.exports = require("./typhoon")
+module.exports = require "./typhoon"

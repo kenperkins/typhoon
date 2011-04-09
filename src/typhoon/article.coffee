@@ -1,17 +1,11 @@
-fs = require 'fs'
-path = require 'path'
-require './patches'
+fs          = require 'fs'
+path        = require 'path'
+{slug, pad} = require './utils'
 
-class Article
-
-  @baseUrl: (value = '') ->
-    if value
-      @_baseUrl = value
-      this
-    else
-      @_baseUrl || ''
+module.exports = class Article
 
   @fromFile: (file, encoding, callback) ->
+    file = Article.includePath() + '/' + file
     fs.readFile file, encoding, (err, data) ->
       return callback err if err
 
@@ -37,19 +31,38 @@ class Article
       @meta match[1].toLowerCase(), match[2]
       meta = meta.substring match[0].length
 
+  @_baseUrl: ''
+  @baseUrl: (baseUrl = null) ->
+    if baseUrl
+      Article._baseUrl = baseUrl
+    else
+      Article._baseUrl
+
+  @_includePath: ''
+  @includePath: (includePath = null) ->
+    if arguments.length > 0
+      Article._includePath = includePath
+    else
+      Article._includePath
+
+  @_extension: '.txt'
+  @extension: (extension = null) ->
+    if arguments.length > 0
+      Article._extension = extension
+    else
+      Article._extension
+
+  _body: ''
   body: (body = null) ->
     if body
       @_body = body
-      this
     else
       @_body
 
+  _meta: {}
   meta: (key = null, value = null) ->
-    @_meta = {} if !@_meta
-
     if value
       @_meta[key] = value
-      this
     else if key
       @_meta[key]
     else
@@ -65,22 +78,14 @@ class Article
       [year, month, day] = date.split '/'
       new Date Date.UTC year, month - 1, day
 
-  slug: -> @meta('slug') || @title().slug()
+  slug: -> @meta('slug') || slug(@title())
 
   permalink: (relative = false) ->
     date = @date()
-
     base = if relative then '' else Article.baseUrl()
-
     base + '/' + [
-      date.getUTCFullYear(),
-      (date.getUTCMonth() + 1).pad()
-      date.getUTCDate().pad(),
+      date.getUTCFullYear()
+      pad(date.getUTCMonth() + 1)
+      pad(date.getUTCDate())
       @slug()
     ].join '/'
-
-###
-Module Exports
-###
-
-module.exports.Article = Article

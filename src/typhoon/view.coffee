@@ -1,25 +1,37 @@
-haml = require 'hamljs'
-utils = require './utils'
+haml     = require 'hamljs'
+utils    = require './utils'
 markdown = require('node-markdown').Markdown
-crypto = require 'crypto'
-require './patches'
+Helpers  = require './helpers'
 
-###
-View object
-###
+module.exports = class View
+  constructor: (@name, @encoding, @options = {}) ->
+    @file = View.includePath() + '/' + @name + View.extension()
 
-class View
-  constructor: (@file, @encoding, @options = {}, @absolute_path = false) ->
-    @file = View.templatesDir() + @file if !@absolute_path
+  @_includePath: ''
+  @includePath: (includePath = null) ->
+    if arguments.length > 0
+      View._includePath = includePath
+    else
+      View._includePath
 
-  @_templatesDir: null
-  @templatesDir: -> return if arguments.length > 0 then View._templatesDir = arguments[0] else View._templatesDir
+  @_extension: '.haml'
+  @extension: (extension = null) ->
+    if arguments.length > 0
+      View._extension = extension
+    else
+      View._extension
 
-  @_globals = {}
-  @globals: -> return if arguments.length > 0 then View._globals = arguments[0] else View._globals
+  @_globals: {}
+  @globals: (globals = null) ->
+    if arguments.length > 0 
+      View._globals = globals
+    else
+      View._globals
+
+  @renderFile: utils.renderHamlFile
 
   render: (res, locals, callback) ->
-    layoutFile = View.templatesDir() + '/layout.haml'
+    layoutFile = View.includePath() + '/layout.haml'
     that = this
 
     options = utils.merge @options, locals: View.globals()
@@ -28,7 +40,7 @@ class View
       options.locals = utils.merge options.locals, locals
       options.locals.body = data
       options.locals.__proto__ = Helpers
-      haml.renderFile layoutFile, that.encoding, options, (err, data) ->
+      View.renderFile layoutFile, that.encoding, options, (err, data) ->
         if err then return callback err
         res.writeHead 200, 'content-type': 'text/html'
         res.end data
@@ -39,25 +51,6 @@ class View
     locals = utils.merge View.globals(), locals
     options = utils.merge @options, locals: locals
     options.locals.__proto__ = Helpers
-    haml.renderFile templateFile, @encoding, options, (err, data) ->
+    View.renderFile templateFile, @encoding, options, (err, data) ->
       if err then return callback err
       callback null, data
-
-###
-View helpers
-###
-
-class Helpers
-  @markdown: (str) -> markdown str
-  @summary: (body) -> body.split('<!-- more -->')[0].replace /\.$/, '&hellip;'
-  @gravatar: (email, size = 50) ->
-    'http://www.gravatar.com/avatar/' +
-    crypto.createHash('md5').update(email.trim().toLowerCase()).digest('hex') +
-    "?r=pg&s=#{size}.jpg&d=identicon"
-
-###
-Module Exports
-###
-
-module.exports.View = View
-module.exports.Helpers = Helpers
