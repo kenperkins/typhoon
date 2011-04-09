@@ -21,14 +21,9 @@ build = (cb) ->
     log 'Compiling CoffeeScript to Javascript'
     exec 'coffee -c -b -o lib src', cb
 
-  copyDepends = (cb) ->
-    log 'Copying dependencies'
-    exec 'cp src/typhoon/feed.haml lib/typhoon/', cb
-
   series [
     clean
     compileCoffee
-    copyDepends
   ], cb
 
 task 'build', 'Build Typhoon', -> build onerror
