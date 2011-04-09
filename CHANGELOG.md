@@ -1,3 +1,13 @@
+0.2.0 / 2011-04-09
+==================
+
+  * Major rehaul of the API
+  * Modified the `summary` helper. Can now specify `delimiter` and `trimmer`
+  * Removed `feed.haml` and added optional configuration `configs.rss = true`
+  * Helpers are now in their own file `helpers.coffee`
+  * Removed `patches.coffee` now `utils.coffee`
+  * Added optional configurations: `articlesExt`, `templatesExt`
+
 0.1.2 / 2011-04-05
 ==================
 
