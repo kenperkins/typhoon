@@ -46,6 +46,7 @@ The first thing you will need to get started is the following directory structur
       |-- error.haml       # Template used when there is a http error (404, 500)
       |-- layout.haml      # Frame that is used to render each content page
       |-- list.haml        # Template used to render a list of articles
+      |-- feed.haml        # Template used to render rss feed (optional)
     |- configs.js          # Typhoon configurations
     |- index.js            # Node entry-point
 
@@ -54,7 +55,7 @@ The first thing you will need to get started is the following directory structur
 The node entry-point is the script you will be executing with node.
 
     var typhoon = require('typhoon');
-    typhoon.listen(require('./configs'));
+    typhoon(__dirname, require('./configs');
 
 # Typhoon configurations - configs.js
 
@@ -75,6 +76,13 @@ The configurations file is a module that exports an object with the following fo
       'baseUrl': 'http://127.0.0.1:8080',           # base url
       'encoding': 'utf8',                           # encoding of the articles and templates
       'perPage': 5,                                 # articles per page
+
+      # Optional configurations
+      'articlesExt': '.txt',                        # extension of article files
+      'templatesExt': '.haml',                      # extension of template files
+      'rss': true,                                  # enable the rss feed (requires feed template)
+
+      # Specific to the templates used by blog.ht4.ca
       'googleAnalytics': 'UX-XXXXX-X',              # google analytics tracking code
       'disqus': 'myblog',                           # disqus site id
       'feedburner': 'myblog'                        # feedburner site id
@@ -115,8 +123,11 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
 Several template helpers are available such as:
 
   * **markdown(str)** - returns: Markdown encoded string
-  * **summary(body)** - returns: Content in `body` preceding `<!-- more -->`
+  * **summary(body, seperator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
   * **gravatar(email, size=50)** - returns: URL to gravatar
+  * **prettyDate(date)** - returns: Date in format "April 9, 2011"
+  * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
+  * **rfc822Date(date)** - returns: Date in RFC822 format (used by RSS feeds)
 
 These helpers can be overrided and extended as such:
 
