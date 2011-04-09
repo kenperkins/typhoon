@@ -29,7 +29,7 @@ days = [
 
 module.exports = class Helpers
   @markdown: (str) -> markdown str
-  @summary: (body) -> body.split('<!-- more -->')[0].replace /\.$/, '&hellip;'
+  @summary: (body, seperator = '<!-- more -->', trimmer = '&hellip;') -> body.split(seperator)[0].replace /\.$/, trimmer
   @gravatar: (email, size = 50) ->
     'http://www.gravatar.com/avatar/' +
     crypto.createHash('md5').update(email.trim().toLowerCase()).digest('hex') +
