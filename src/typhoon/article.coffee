@@ -24,7 +24,8 @@ module.exports = class Article
   constructor: (data) ->
     data = data.replace /\r\n/g, "\n"
     meta = data.split(/\n\n/, 1).toString()
-
+    
+    @_meta = {}
     @body data.substring meta.length + 2
 
     while match = meta.match /([a-z0-9]+)\:\s*(.*)\s*\n?/i
@@ -52,14 +53,12 @@ module.exports = class Article
     else
       Article._extension
 
-  _body: ''
   body: (body = null) ->
     if body
       @_body = body
     else
       @_body
 
-  _meta: {}
   meta: (key = null, value = null) ->
     if value
       @_meta[key] = value
