@@ -1,8 +1,8 @@
 {
   "name": "typhoon",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Minimalist blog engine",
-  "keywords": ["blog"],
+  "keywords": ["blog", "express"],
   "homepage": "http://github.com/cjoudrey/typhoon",
   "author": "Christian Joudrey <cmallette@gmail.com> (http://twitter.com/cjoudrey)",
   "repository": {
@@ -10,16 +10,15 @@
     "url":"git://github.com/cjoudrey/typhoon"
   },
   "dependencies": {
-    "connect": ">= 1.0.0",
-    "hamljs": ">= 0.4.5",
+    "express": ">= 2.2.2 < 3.0.0",
     "node-markdown": ">= 0.1.0"
   },
   "devDependencies": {
     "coffee-script": ">= 1.0.1",
     "async": ">= 0.1.8"
   },
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "engines": {
-    "node": ">= 0.4.0 < 0.5.0"
+    "node": ">= 0.4.1 < 0.5.0"
   }
 }

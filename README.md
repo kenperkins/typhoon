@@ -4,11 +4,11 @@ The minimalist blog engine for Node.js
 
 # How it works
 
-- Typhoon is built right on top of **[Connect](//github.com/senchalabs/connect)** making it easily to extend
+- Typhoon is built right on top of **[Express](http://expressjs.com)** making it easily to extend
 - Content is entirely managed through **git**
 - Articles are written in _.txt_ with embedded metadata (in **yaml** format)
 - Articles are to be written in **Markdown** format and are compiled with  [node-markdown](//github.com/andris9/node-markdown)
-- Templating is done using **HAML** and compiled with [haml.js](//github.com/visionmedia/haml.js)
+- Templating is done using **Jade**
 - Comments are handled by [disqus](http://disqus.com/)
 - Typhoon's RSS feed can be used with [FeedBurner](http://feedburner.com/)
 - Individual articles can be accessed through urls such as _/2011/03/28/hello-world_
@@ -18,7 +18,7 @@ The minimalist blog engine for Node.js
 
 The easiest way to obtain Typhoon is through [npm](http://npmjs.org/):
 
-    npm install Typhoon
+    npm install typhoon
 
 Alternatively you can build it manually:
 
@@ -42,11 +42,11 @@ The first thing you will need to get started is the following directory structur
     |-- articles/          # Contains your articles
     |-- public/            # Contains your assets (css, images, favicon)
     |-- templates/         # Contains your haml template
-      |-- article.haml     # Template used to render an article
-      |-- error.haml       # Template used when there is a http error (404, 500)
-      |-- layout.haml      # Frame that is used to render each content page
-      |-- list.haml        # Template used to render a list of articles
-      |-- feed.haml        # Template used to render rss feed (optional)
+      |-- article.jade     # Template used to render an article
+      |-- error.jade       # Template used when there is a http error (404, 500)
+      |-- layout.jade      # Frame that is used to render each content page
+      |-- list.jade        # Template used to render a list of articles
+      |-- feed.jade        # Template used to render rss feed (optional)
     |- configs.js          # Typhoon configurations
     |- index.js            # Node entry-point
 
@@ -55,7 +55,7 @@ The first thing you will need to get started is the following directory structur
 The node entry-point is the script you will be executing with node.
 
     var typhoon = require('typhoon');
-    typhoon(__dirname, require('./configs');
+    typhoon.app(__dirname, require('./configs');
 
 # Typhoon configurations - configs.js
 
@@ -69,7 +69,7 @@ The configurations file is a module that exports an object with the following fo
       'description': 'just another blog',           # blog description
       'favicon': __dirname + '/public/favicon.ico', # path to the blog's favicon
       'staticDir': __dirname + '/public',           # path to the blog's assets folder
-      'templatesDir': __dirname + '/templates',     # path to the templates
+      'viewsDir': __dirname + '/templates',         # path to the views
       'articlesDir': __dirname + '/articles',       # path to the articles
       'host': '127.0.0.1',                          # host to listen on
       'port': 8080,                                 # port to listen on
@@ -79,7 +79,7 @@ The configurations file is a module that exports an object with the following fo
 
       # Optional configurations
       'articlesExt': '.txt',                        # extension of article files
-      'templatesExt': '.haml',                      # extension of template files
+      'viewsEngine': 'jade',                        # views engine
       'rss': true,                                  # enable the rss feed (requires feed template)
 
       # Specific to the templates used by blog.ht4.ca
@@ -94,7 +94,7 @@ Each article placed in the `articles/` folder must have a filename with the foll
 
 The filename is used to date the article and to build a link to the article.
 
-The content of the file is formed by a metadata section and the article's body seperated by an empty line `/\n\n/`.
+The content of the file is formed by a metadata section and the article's body separated by an empty line `/\n\n/`.
 
 The only required metadata is `title`. Additional meta tags can be added and will be accessible in the templates.
 
@@ -123,7 +123,7 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
 Several template helpers are available such as:
 
   * **markdown(str)** - returns: Markdown encoded string
-  * **summary(body, seperator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
+  * **summary(body, separator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
   * **gravatar(email, size=50)** - returns: URL to gravatar
   * **prettyDate(date)** - returns: Date in format "April 9, 2011"
   * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
@@ -133,7 +133,7 @@ These helpers can be overrided and extended as such:
 
     var typhoon = require('typhoon');
 
-    typhoon.Helpers.github = function(name) {
+    typhoon.helpers.github = function(name) {
       return 'https://github.com/' + name;
     };
 

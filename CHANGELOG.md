@@ -1,3 +1,9 @@
+0.3.0 / 2011-04-17
+==================
+
+  * Complete recode to [Express](http://expressjs.com)
+  * Default template engine now [Jade](http://jade-lang.com)
+
 0.2.2 / 2011-04-09
 ==================
 

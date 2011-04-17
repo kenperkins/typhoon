@@ -16,24 +16,6 @@ onerror = (err) ->
     process.stdout.write "#{red}#{err.stack}#{reset}\n"
     process.exit -1
 
-build = (cb) ->
-  compileCoffee = (cb) ->
-    log 'Compiling CoffeeScript to Javascript'
-    exec 'coffee -c -b -o lib src', cb
-
-  series [
-    clean
-    compileCoffee
-  ], cb
-
-task 'build', 'Build Typhoon', -> build onerror
-
-clean = (cb) ->
-  log 'Removing temporary files and current build'
-  exec 'rm -rf lib', cb
-
-task 'clean', 'Remove temporary files and current build', -> clean onerror
-
 test = (cb) -> cb null
 
 task 'test', 'Run all tests', -> test onerror
