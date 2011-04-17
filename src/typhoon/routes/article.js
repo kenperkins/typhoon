@@ -11,8 +11,8 @@ module.exports.setup = function(app) {
 
   app.param(['year', 'month', 'day', 'page'], utils.mustBeDigits);
 
-  app.get('/:year?/:month?/:day?', getArticles, list);
   app.get('/:year?/:month?/:day?/page/:page', getArticles, list);
+  app.get('/:year?/:month?/:day?', getArticles, list);
   app.get('/:year/:month/:day/:slug', getArticle, show);
 };
 
@@ -38,19 +38,19 @@ var getArticles = function(req, res, next) {
     };
   }
 
-  req.params.page = Number(req.params.page);
-  req.params.perPage = Number(req.app.set('typhoon perPage'));
+  req.page = Number(req.params.page);
+  req.perPage = Number(req.app.set('typhoon perPage'));
 
-  if (isNaN(req.params.page) || req.params.page < 1) {
-    req.params.page = 1;
+  if (isNaN(req.page) || req.page < 1) {
+    req.page = 1;
   }
 
-  if (isNaN(req.params.perPage) || req.params.perPage < 0) {
-    req.params.perPage = 15;
+  if (isNaN(req.perPage) || req.perPage < 0) {
+    req.perPage = 15;
   }
 
-  limit = req.params.perPage;
-  offset = req.params.page * req.params.perPage - req.params.perPage;
+  limit = req.perPage;
+  offset = req.page * req.perPage - req.perPage;
 
   Article.fromDir(filter, limit, offset, function (err, articles, hasMore) {
     if (err) return next(new Error(500));
@@ -82,7 +82,7 @@ var list = function(req, res, next) {
   var pageLink;
 
   locals.articles = req.articles;
-  locals.page = req.params.page;
+  locals.page = req.page;
   locals.filter = req.filterParams;
   locals.paging = {};
 
@@ -111,10 +111,16 @@ var list = function(req, res, next) {
   }
 
   pageLink = function (page) {
-    url = req.app.set('typhoon baseUrl') + '/' + req.filterParams.join('/');
-    if (page > 1) {
-      url = url + 'page/' + page;
+    url = req.app.set('typhoon baseUrl') + '/';
+
+    if (req.filterParams.length > 0) {
+      url += req.filterParams.join('/') + '/';
     }
+
+    if (page > 1) {
+      url += 'page/' + page;
+    }
+
     return url;
   };
 
