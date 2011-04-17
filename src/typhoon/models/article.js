@@ -46,7 +46,7 @@ module.exports.Article = (function() {
 
     date = this.date;
 
-    if (relative === true) {
+    if (relative !== true) {
       url = Article.baseUrl;
     }
 
