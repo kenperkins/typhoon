@@ -1,3 +1,8 @@
+0.3.2 / 2011-04-17
+==================
+
+  * Fixed an issue with Article.permalink relative argument.
+
 0.3.1 / 2011-04-17
 ==================
 
