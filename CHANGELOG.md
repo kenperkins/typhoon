@@ -1,3 +1,9 @@
+0.3.1 / 2011-04-17
+==================
+
+  * Added Jade to dependencies
+  * Fixed an issue with paging not working properly
+
 0.3.0 / 2011-04-17
 ==================
 
