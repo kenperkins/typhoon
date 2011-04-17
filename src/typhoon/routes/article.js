@@ -8,9 +8,9 @@ module.exports.setup = function(app) {
   if (app.set('typhoon rss') === true) {
     app.get('/feed.xml', getArticles, feed);
   }
-  
+
   app.param(['year', 'month', 'day', 'page'], utils.mustBeDigits);
-  
+
   app.get('/:year?/:month?/:day?', getArticles, list);
   app.get('/:year?/:month?/:day?/page/:page', getArticles, list);
   app.get('/:year/:month/:day/:slug', getArticle, show);
@@ -51,7 +51,7 @@ var getArticles = function(req, res, next) {
 
   limit = req.params.perPage;
   offset = req.params.page * req.params.perPage - req.params.perPage;
-  
+
   Article.fromDir(filter, limit, offset, function (err, articles, hasMore) {
     if (err) return next(new Error(500));
     req.articles = articles;
@@ -111,7 +111,7 @@ var list = function(req, res, next) {
   }
 
   pageLink = function (page) {
-    url = req.app.set('typhoon baseUrl') + '/' + filterParams.join('/');
+    url = req.app.set('typhoon baseUrl') + '/' + req.filterParams.join('/');
     if (page > 1) {
       url = url + 'page/' + page;
     }
@@ -131,20 +131,20 @@ var list = function(req, res, next) {
 
 var show = function(req, res, next) {
   var locals = {};
-  
+
   locals.article = req.article;
   locals.title = req.article.title;
-  
+
   res.render('article', locals);
 };
 
 var feed = function(req, res, next) {
   var options = {};
-  
+
   options.layout = false;
   options.articles = req.articles;
   options.lastBuild = new Date();
-  
+
   res.render('feed', options, function(err, data) {
     if (err) return next(err);
     res.send(data, {'Content-Type': 'text/xml'});
