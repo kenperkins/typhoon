@@ -4,7 +4,7 @@ The minimalist blog engine for Node.js
 
 # How it works
 
-- Typhoon is built right on top of **[Express](http://expressjs.com)** making it easily to extend
+- Typhoon is built right on top of **[Express](http://expressjs.com)** making it easy to extend
 - Content is entirely managed through **git**
 - Articles are written in _.txt_ with embedded metadata (in **yaml** format)
 - Articles are to be written in **Markdown** format and are compiled with  [node-markdown](//github.com/andris9/node-markdown)
