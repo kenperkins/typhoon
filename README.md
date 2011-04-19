@@ -63,20 +63,20 @@ The configurations file is a module that exports an object with the following fo
       'description': 'just another blog',           # blog description
       'favicon': __dirname + '/public/favicon.ico', # path to the blog's favicon
       'staticDir': __dirname + '/public',           # path to the blog's assets folder
-      'viewsDir': __dirname + '/templates',         # path to the views
+      'viewsDir': __dirname + '/views',             # path to the views
       'articlesDir': __dirname + '/articles',       # path to the articles
       'host': '127.0.0.1',                          # host to listen on
       'port': 8080,                                 # port to listen on
       'baseUrl': 'http://127.0.0.1:8080',           # base url
-      'encoding': 'utf8',                           # encoding of the articles and templates
+      'encoding': 'utf8',                           # encoding of the articles
       'perPage': 5,                                 # articles per page
 
       # Optional configurations
       'articlesExt': '.txt',                        # extension of article files
       'viewsEngine': 'jade',                        # views engine
-      'rss': true,                                  # enable the rss feed (requires feed template)
+      'rss': true,                                  # enable the rss feed (requires feed view)
 
-      # Specific to the templates used by blog.ht4.ca
+      # Specific to the views used by blog.ht4.ca
       'googleAnalytics': 'UX-XXXXX-X',              # google analytics tracking code
       'disqus': 'myblog',                           # disqus site id
       'feedburner': 'myblog'                        # feedburner site id
@@ -90,7 +90,7 @@ The filename is used to date the article and to build a link to the article.
 
 The content of the file is formed by a metadata section and the article's body separated by an empty line `/\n\n/`.
 
-The only required metadata is `title`. Additional meta tags can be added and will be accessible in the templates.
+The only required metadata is `title`. Additional meta tags can be added and will be accessible in the views.
 
 Example article `2011-04-03-lorem-ipsum.txt`:
 
