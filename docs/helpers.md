@@ -2,13 +2,13 @@
 
 Several view helpers are available such as:
 
-  * **markdown(str)** - returns: Markdown encoded string
-  * **summary(body, separator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
-  * **gravatar(email, size=50)** - returns: URL to gravatar
-  * **prettyDate(date)** - returns: Date in format "April 9, 2011"
-  * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
-  * **rfc822Date(date)** - returns: Date in RFC822 format (used by RSS feeds)
-  * **configs** - returns: Configs object
+  * String **markdown(str)** - returns the Markdown encoded string
+  * String **summary(body, separator = '<!-- more -->', trimmer = '...')** - returns the content in `body` preceding `<!-- more -->` and trims using trimmer
+  * String **gravatar(email, size=50)** - returns the URL to gravatar for the given `email`
+  * String **prettyDate(date)** - returns the `date` in format `"April 9, 2011"`
+  * String **isoDate(date)** - returns the `date` in format `"YYYY-MM-DD"`
+  * String **rfc822Date(date)** - returns the `date` in RFC822 format (used by RSS feeds)
+  * Object **configs** - returns the `configs` object
 
 These helpers can be overrided and extended as such:
 
