@@ -120,6 +120,7 @@ Several template helpers are available such as:
   * **prettyDate(date)** - returns: Date in format "April 9, 2011"
   * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
   * **rfc822Date(date)** - returns: Date in RFC822 format (used by RSS feeds)
+  * **configs** - returns: Configs object
 
 These helpers can be overrided and extended as such:
 
