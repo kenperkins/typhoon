@@ -33,14 +33,16 @@ The first thing you will need to get started is the following directory structur
     blog/
     |-- articles/          # Contains your articles
     |-- public/            # Contains your assets (css, images, favicon)
-    |-- templates/         # Contains your haml template
-      |-- article.jade     # Template used to render an article
-      |-- error.jade       # Template used when there is a http error (404, 500)
+    |-- views/             # Contains your jade views
+      |-- article.jade     # Used to render an article
+      |-- error.jade       # Used when there is a http error (404, 500) in production
       |-- layout.jade      # Frame that is used to render each content page
-      |-- list.jade        # Template used to render a list of articles
-      |-- feed.jade        # Template used to render rss feed (optional)
+      |-- list.jade        # Used to render a list of articles
+      |-- feed.jade        # Used to render the RSS feed (optional)
     |- configs.js          # Typhoon configurations
     |- index.js            # Node entry-point
+
+A full documentation of available locals for each view is available [here](//github.com/cjoudrey/typhoon/blob/master/docs/views.md).
 
 # Node entry-point - index.js
 
@@ -110,25 +112,9 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
     Maecenas justo neque, dictum eget accumsan non, luctus ac lacus.
     Phasellus ac erat metus, et sagittis dolor.
 
-# Template helpers
+# View helpers
 
-Several template helpers are available such as:
-
-  * **markdown(str)** - returns: Markdown encoded string
-  * **summary(body, separator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
-  * **gravatar(email, size=50)** - returns: URL to gravatar
-  * **prettyDate(date)** - returns: Date in format "April 9, 2011"
-  * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
-  * **rfc822Date(date)** - returns: Date in RFC822 format (used by RSS feeds)
-  * **configs** - returns: Configs object
-
-These helpers can be overrided and extended as such:
-
-    var typhoon = require('typhoon');
-
-    typhoon.helpers.github = function(name) {
-      return 'https://github.com/' + name;
-    };
+  Documentation available [here](//github.com/cjoudrey/typhoon/blob/master/docs/helpers.md).
 
 # Blogs using Typhoon
 
