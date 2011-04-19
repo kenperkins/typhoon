@@ -20,14 +20,6 @@ The easiest way to obtain Typhoon is through [npm](http://npmjs.org/):
 
     npm install typhoon
 
-Alternatively you can build it manually:
-
-    git clone git://github.com/cjoudrey/typhoon.git
-    cd typhoon/
-    cake build
-
-Keep in mind, if you compile it manually you will need to download the dependencies and devDependencies listed in [package.json](https://github.com/cjoudrey/typhoon/blob/master/package.json).
-
 # Setting up your blog
 
 If you are anxious to get started simply clone the repository [cjoudrey/blog.ht4.ca](https://github.com/cjoudrey/blog.ht4.ca) which comes with everything to get you started.
