@@ -4,7 +4,7 @@ This template is used to render an entire page.
 
 Locals:
 
-  * **body** - the content of the page
+  * String **body** - the content of the page
 
 # list.jade
 
