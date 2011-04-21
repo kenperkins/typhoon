@@ -44,7 +44,7 @@ module.exports.gravatar = function (email, size) {
   size = size || 50;
   return 'http://www.gravatar.com/avatar/' +
          crypto.createHash('md5').update(email.trim().toLowerCase()).digest('hex') +
-         '?r=pg&s=#{size}.jpg&d=identicon';
+         '?r=pg&s=' + Number(size) + '.jpg&d=identicon';
 };
 
 module.exports.prettyDate = function (date) {
