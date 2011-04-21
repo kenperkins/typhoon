@@ -5,7 +5,7 @@ var helpers = require('./helpers');
 module.exports.app = function(root, configs, listen) {
   var app = express.createServer();
 
-  module.exports.setDefaultConfigs(root, configs);
+  configs = module.exports.setDefaultConfigs(root, configs);
 
   app.helpers(helpers);
   app.dynamicHelpers({
@@ -120,4 +120,6 @@ module.exports.setDefaultConfigs = function(root, configs) {
 
   // (optional) Enable RSS feed (requires feed template)
   configs.rss = configs.rss || false;
+  
+  return configs;
 };
