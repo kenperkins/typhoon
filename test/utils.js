@@ -3,13 +3,13 @@ var assert = require('assert');
 var fs = require('fs');
 
 module.exports = {
-  'utils#pad': function() {
+  'test utils#pad': function() {
     assert.strictEqual(utils.pad(1), '01');
     assert.strictEqual(utils.pad(10), '10');
     assert.strictEqual(utils.pad('a'), '');
   },
 
-  'utils#mustBeDigits': function() {
+  'test utils#mustBeDigits': function() {
     var req = {};
     var res = {};
 
@@ -26,7 +26,7 @@ module.exports = {
     }, '1234a');
   },
 
-  'utils#validDate': function() {
+  'testutils#validDate': function() {
     assert.ok(utils.validDate());
     assert.ok(utils.validDate(2011));
     assert.ok(utils.validDate(2011, 1));
