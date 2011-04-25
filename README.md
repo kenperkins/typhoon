@@ -112,6 +112,10 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
     Maecenas justo neque, dictum eget accumsan non, luctus ac lacus.
     Phasellus ac erat metus, et sagittis dolor.
 
+# Documentation for Views
+
+  Local variables are documented [here](//github.com/cjoudrey/typhoon/blob/master/docs/views.md).
+
 # View helpers
 
   Documentation available [here](//github.com/cjoudrey/typhoon/blob/master/docs/helpers.md).
