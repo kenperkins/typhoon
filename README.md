@@ -20,14 +20,6 @@ The easiest way to obtain Typhoon is through [npm](http://npmjs.org/):
 
     npm install typhoon
 
-Alternatively you can build it manually:
-
-    git clone git://github.com/cjoudrey/typhoon.git
-    cd typhoon/
-    cake build
-
-Keep in mind, if you compile it manually you will need to download the dependencies and devDependencies listed in [package.json](https://github.com/cjoudrey/typhoon/blob/master/package.json).
-
 # Setting up your blog
 
 If you are anxious to get started simply clone the repository [cjoudrey/blog.ht4.ca](https://github.com/cjoudrey/blog.ht4.ca) which comes with everything to get you started.
@@ -41,14 +33,16 @@ The first thing you will need to get started is the following directory structur
     blog/
     |-- articles/          # Contains your articles
     |-- public/            # Contains your assets (css, images, favicon)
-    |-- templates/         # Contains your haml template
-      |-- article.jade     # Template used to render an article
-      |-- error.jade       # Template used when there is a http error (404, 500)
+    |-- views/             # Contains your jade views
+      |-- article.jade     # Used to render an article
+      |-- error.jade       # Used when there is a http error (404, 500) in production
       |-- layout.jade      # Frame that is used to render each content page
-      |-- list.jade        # Template used to render a list of articles
-      |-- feed.jade        # Template used to render rss feed (optional)
+      |-- list.jade        # Used to render a list of articles
+      |-- feed.jade        # Used to render the RSS feed (optional)
     |- configs.js          # Typhoon configurations
     |- index.js            # Node entry-point
+
+A full documentation of available locals for each view is available [here](//github.com/cjoudrey/typhoon/blob/master/docs/views.md).
 
 # Node entry-point - index.js
 
@@ -69,20 +63,20 @@ The configurations file is a module that exports an object with the following fo
       'description': 'just another blog',           # blog description
       'favicon': __dirname + '/public/favicon.ico', # path to the blog's favicon
       'staticDir': __dirname + '/public',           # path to the blog's assets folder
-      'viewsDir': __dirname + '/templates',         # path to the views
+      'viewsDir': __dirname + '/views',             # path to the views
       'articlesDir': __dirname + '/articles',       # path to the articles
       'host': '127.0.0.1',                          # host to listen on
       'port': 8080,                                 # port to listen on
       'baseUrl': 'http://127.0.0.1:8080',           # base url
-      'encoding': 'utf8',                           # encoding of the articles and templates
+      'encoding': 'utf8',                           # encoding of the articles
       'perPage': 5,                                 # articles per page
 
       # Optional configurations
       'articlesExt': '.txt',                        # extension of article files
       'viewsEngine': 'jade',                        # views engine
-      'rss': true,                                  # enable the rss feed (requires feed template)
+      'rss': true,                                  # enable the rss feed (requires feed view)
 
-      # Specific to the templates used by blog.ht4.ca
+      # Specific to the views used by blog.ht4.ca
       'googleAnalytics': 'UX-XXXXX-X',              # google analytics tracking code
       'disqus': 'myblog',                           # disqus site id
       'feedburner': 'myblog'                        # feedburner site id
@@ -96,7 +90,7 @@ The filename is used to date the article and to build a link to the article.
 
 The content of the file is formed by a metadata section and the article's body separated by an empty line `/\n\n/`.
 
-The only required metadata is `title`. Additional meta tags can be added and will be accessible in the templates.
+The only required metadata is `title`. Additional meta tags can be added and will be accessible in the views.
 
 Example article `2011-04-03-lorem-ipsum.txt`:
 
@@ -118,24 +112,9 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
     Maecenas justo neque, dictum eget accumsan non, luctus ac lacus.
     Phasellus ac erat metus, et sagittis dolor.
 
-# Template helpers
+# View helpers
 
-Several template helpers are available such as:
-
-  * **markdown(str)** - returns: Markdown encoded string
-  * **summary(body, separator = '<!-- more -->', trimmer = '...')** - returns: Content in `body` preceding `<!-- more -->` and trims using trimmer
-  * **gravatar(email, size=50)** - returns: URL to gravatar
-  * **prettyDate(date)** - returns: Date in format "April 9, 2011"
-  * **isoDate(date)** - returns: Date in format "YYYY-MM-DD"
-  * **rfc822Date(date)** - returns: Date in RFC822 format (used by RSS feeds)
-
-These helpers can be overrided and extended as such:
-
-    var typhoon = require('typhoon');
-
-    typhoon.helpers.github = function(name) {
-      return 'https://github.com/' + name;
-    };
+  Documentation available [here](//github.com/cjoudrey/typhoon/blob/master/docs/helpers.md).
 
 # Blogs using Typhoon
 
