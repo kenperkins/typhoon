@@ -48,7 +48,7 @@ module.exports.app = function(root, configs, listen) {
   });
 
   app.configure('production', function() {
-    app.enable('cache views');
+    app.enable('view cache');
   });
 
   require('./routes/article').setup(app);
