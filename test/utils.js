@@ -33,5 +33,9 @@ module.exports = {
     assert.ok(utils.validDate(2011, 1, 1));
     assert.equal(utils.validDate(2011, 13, 1), false);
     assert.equal(utils.validDate(2011, 1, 32), false);
+  },
+
+  'testutils#escapeRegExp': function() {
+    assert.equal(utils.escapeRegExp('[-[\]{}()*+?.,\\^$|#\s]'), '\\[\\-\\[\\]\\{\\}\\(\\)\\*\\+\\?\\.\\,\\\\\\^\\$\\|\\#s\\]');
   }
 };

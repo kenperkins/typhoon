@@ -27,3 +27,7 @@ module.exports.validDate = function(year, month, day) {
 
   return date.getUTCFullYear() === parseInt(year) && date.getUTCMonth() + 1 === parseInt(month) && date.getUTCDate() === parseInt(day);
 };
+
+module.exports.escapeRegExp = function(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
