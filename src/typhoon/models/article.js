@@ -39,7 +39,7 @@ module.exports.Article = (function() {
       return new Date(Date.UTC(splitted[0], splitted[1] - 1, splitted[2]));
     });
   };
-  
+
   Article.prototype.permalink = function(relative) {
     var url = '';
     var date;
@@ -64,7 +64,7 @@ module.exports.Article = (function() {
   Article.extension = '.txt';
   Article.baseUrl = null;
   Article.encoding = 'utf8';
-  
+
   Article.fromFile = function(file, callback) {
     var file;
 
@@ -86,7 +86,7 @@ module.exports.Article = (function() {
       callback(null, article);
     });
   };
-  
+
   Article.fromDir = function(filter, limit, offset, callback) {
     fs.readdir(Article.includePath, function(err, files) {
       if (err) return callback(err);
