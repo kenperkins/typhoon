@@ -3,6 +3,7 @@ var path = require('path');
 var Article = require('../models/article').Article;
 var utils = require('../utils');
 var helpers = require('../helpers');
+var express = require('express');
 
 module.exports.setup = function(app) {
   if (app.set('typhoon rss') === true) {
@@ -13,6 +14,7 @@ module.exports.setup = function(app) {
 
   app.get('/:year?/:month?/:day?/page/:page', getArticles, list);
   app.get('/:year?/:month?/:day?', getArticles, list);
+  app.get(/^\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*?)\/(.*)$/i, staticFile);
   app.get('/:year/:month/:day/:slug', getArticle, show);
 };
 
@@ -155,4 +157,10 @@ var feed = function(req, res, next) {
     if (err) return next(err);
     res.send(data, {'Content-Type': 'text/xml'});
   });
+};
+
+var staticFile = function(req, res, next) {
+  var dir = '/' + req.params.slice(0, 4).join('-');
+  req.url = req.params[4];
+  return express.static(req.app.set('typhoon articlesDir') + dir)(req, res, next);
 };

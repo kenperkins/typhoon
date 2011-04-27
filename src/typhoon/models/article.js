@@ -95,23 +95,35 @@ module.exports.Article = (function() {
       var loadArticles;
       var currentOffset = 0;
 
+      // Filter the filelist
       if (filter) {
         files = files.filter(filter);
       }
 
+      // Sort the remaining
       files = files
         .sort()
         .reverse();
 
+      // Helper that loads articles in series
       loadArticles = function(done) {
         var file = files.shift();
 
+        // Skip files that aren't articles (i.e. don't have the article extension)
+        if (file && !file.match(new RegExp('.*' + utils.escapeRegExp(Article.extension), 'i'))) return loadArticles(done);
+
         currentOffset++;
 
+        // Skip article if we are below our offset
         if ((currentOffset - 1) < offset) return loadArticles(done);
+
+        // No more articles, done.
         if (!file) return done(false);
+
+        // We have `limit` articles, done.
         if (articles.length === limit) return done(file || files.length > 0);
 
+        // Read the article file and push it to the array
         Article.fromFile(file, function(err, article) {
           if (!err) {
             articles.push(article);
@@ -121,6 +133,7 @@ module.exports.Article = (function() {
         });
       };
 
+      // Load the articles using the helper
       loadArticles(function(hasMore) {
         callback(null, articles, hasMore);
       });

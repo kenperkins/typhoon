@@ -16,7 +16,7 @@ module.exports = {
         body: '<span>Test again</span><span>Test</span>'
     });
   },
-  
+
   'test GET /page/2': function(beforeExit) {
     var server = createServer({ perPage: 2 });
 
@@ -26,7 +26,7 @@ module.exports = {
         body: '<span>Test</span><span>Test2</span>'
     });
   },
-  
+
   'test GET /2011': function(beforeExit) {
     var server = createServer({ perPage: 2 });
 
@@ -36,7 +36,7 @@ module.exports = {
         body: '<span>Test again</span><span>Test</span>'
     });
   },
-  
+
   'test GET /2011/page/2': function(beforeExit) {
     var server = createServer({ perPage: 2 });
 
@@ -46,7 +46,7 @@ module.exports = {
         body: '<span>Test</span><span>Test2</span>'
     });
   },
-  
+
   'test GET /2011/03': function(beforeExit) {
     var server = createServer({ perPage: 2 });
 
@@ -56,7 +56,7 @@ module.exports = {
         body: '<span>Test</span><span>Test2</span>'
     });
   },
-  
+
   'test GET /2011/03/page/2': function(beforeExit) {
     var server = createServer({ perPage: 1 });
 
@@ -66,7 +66,7 @@ module.exports = {
         body: '<span>Test2</span>'
     });
   },
-  
+
   'test GET /2011/03/20': function(beforeExit) {
     var server = createServer({ perPage: 2 });
 
@@ -76,7 +76,7 @@ module.exports = {
         body: '<span>Test</span>'
     });
   },
-  
+
   'test GET /2011/03/20/page/1': function(beforeExit) {
     var server = createServer({ perPage: 1 });
 
@@ -86,7 +86,7 @@ module.exports = {
         body: '<span>Test</span>'
     });
   },
-  
+
   'test GET /page/a': function(beforeExit) {
     var server = createServer({ perPage: 1 });
 
@@ -96,7 +96,7 @@ module.exports = {
         response: 404
     });
   },
-  
+
   'test GET /2011/a': function(beforeExit) {
     var server = createServer({ perPage: 1 });
 
@@ -106,9 +106,9 @@ module.exports = {
         response: 404
     });
   },
-  
+
   'test GET /2011/03/20/test': function(beforeExit) {
-    var server = createServer({ perPage: 1 });
+    var server = createServer();
 
     assert.response(server, {
         url: '/2011/03/20/test', timeout: 500
@@ -116,4 +116,14 @@ module.exports = {
         body: '<span>Test</span><p>content here</p>'
     });
   },
+
+  'test GET /2011/03/20/test/test.txt': function(beforeExit) {
+    var server = createServer();
+
+    assert.response(server, {
+      url: '/2011/03/20/test/test.txt', timeout: 500
+    }, {
+      body: 'static\n'
+    });
+  }
 };
