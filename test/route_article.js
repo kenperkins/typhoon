@@ -133,7 +133,10 @@ module.exports = {
     assert.response(server, {
       url: '/feed.xml', timeout: 500
     }, {
-      body: '<?xml version="1.0" encoding="utf-8" ?><article>Test again</article><article>Test</article>'
+      body: '<?xml version="1.0" encoding="utf-8" ?><article>Test again</article><article>Test</article>',
+      headers: {
+        'Content-Type': 'text/xml; charset=utf-8'
+      }
     });
   }
 };
