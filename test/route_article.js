@@ -125,5 +125,15 @@ module.exports = {
     }, {
       body: 'static\n'
     });
+  },
+
+  'test GET /feed.xml': function() {
+    var server = createServer({ rss: true, perPage: 2 });
+
+    assert.response(server, {
+      url: '/feed.xml', timeout: 500
+    }, {
+      body: '<?xml version="1.0" encoding="utf-8" ?><article>Test again</article><article>Test</article>'
+    });
   }
 };
