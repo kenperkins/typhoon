@@ -1,13 +1,15 @@
 var typhoon = require('../src');
 var assert = require('assert');
 var fs = require('fs');
+var http = require('http');
 
-var createServer = function(configs) {
-  return typhoon.app(__dirname + '/fixtures', configs, false);
+var createServer = function(configs, listen) {
+  listen = listen || false;
+  return typhoon.app(__dirname + '/fixtures', configs, listen);
 };
 
 module.exports = {
-  'test GET /favicon.ico': function(beforeExit) {
+  'test GET /favicon.ico (favicon middleware)': function() {
     var server = createServer({ favicon: __dirname + '/fixtures/favicon.ico' });
 
     assert.response(server, {
@@ -18,6 +20,42 @@ module.exports = {
         headers: {
           'Content-Type': 'image/x-icon'
         }
+    });
+  },
+
+  'test GET /test.txt (static middleware)': function() {
+    var server = createServer({ staticDir: __dirname + '/fixtures/public' });
+
+    assert.response(server, {
+        url: '/test.txt', timeout: 500
+    }, {
+        body: 'test\n',
+    });
+  },
+
+  'test production view cache': function() {
+    process.env.NODE_ENV = 'production';
+    var server = createServer();
+    assert.equal(server.enabled('view cache'), true);
+  },
+
+  'test app.listen': function() {
+    var server = createServer({ host: '127.0.0.1', port: 3434 }, true);
+
+    var options = {
+      host: '127.0.0.1',
+      port: 3434,
+      path: '/'
+    };
+
+    process.nextTick(function() {
+      http.get(options, function(res) {
+        assert.equal(res.headers['content-type'], 'text/html; charset=utf-8');
+        server.close();
+      }).on('error', function(e) {
+        assert.fail(e);
+        server.close();
+      });
     });
   }
 }
