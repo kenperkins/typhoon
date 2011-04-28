@@ -160,7 +160,11 @@ var feed = function(req, res, next) {
 };
 
 var staticFile = function(req, res, next) {
+  var options = {};
   var dir = '/' + req.params.slice(0, 4).join('-');
-  req.url = req.params[4];
-  return express.static(req.app.set('typhoon articlesDir') + dir)(req, res, next);
+
+  options.root = req.app.set('typhoon articlesDir') + dir;
+  options.path = req.params[4];
+
+  return express.static.send(req, res, next, options);
 };
