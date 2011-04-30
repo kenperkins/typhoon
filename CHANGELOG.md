@@ -1,3 +1,10 @@
+0.4.0 / 2011-04-29
+==================
+
+  * Added static file folders for articles - closes #8
+  * Added tests - closes #3
+  * Updated Express to 2.3.2
+
 0.3.3 / 2011-04-17
 ==================
 
