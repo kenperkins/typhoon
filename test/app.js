@@ -29,13 +29,27 @@ module.exports = {
     assert.response(server, {
         url: '/test.txt', timeout: 500
     }, {
-        body: 'test\n',
+        body: 'test\n'
+    });
+  },
+
+  'test error handler': function() {
+    process.env.NODE_ENV = 'production';
+    var server = createServer();
+    process.env.NODE_ENV = 'development';
+
+    assert.response(server, {
+        url: '/some_invalid_page', timeout: 500
+    }, {
+        body: '<!DOCTYPE html><html><body><div>404</div></body></html>'
     });
   },
 
   'test production view cache': function() {
     process.env.NODE_ENV = 'production';
     var server = createServer();
+    process.env.NODE_ENV = 'development';
+
     assert.equal(server.enabled('view cache'), true);
   },
 
