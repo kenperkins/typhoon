@@ -47,10 +47,6 @@ var getArticles = function(req, res, next) {
     req.page = 1;
   }
 
-  if (isNaN(req.perPage) || req.perPage < 0) {
-    req.perPage = 15;
-  }
-
   limit = req.perPage;
   offset = req.page * req.perPage - req.perPage;
 
