@@ -16,7 +16,12 @@ onerror = (err) ->
     process.stdout.write "#{red}#{err.stack}#{reset}\n"
     process.exit -1
 
-test = (cb) -> cb null
+test = (cb) ->
+  exec 'expresso -b test/*', (err, stdout, stderr) ->
+    cb err
+    matches = stderr.match /([0-9]+)% ([0-9]+) tests/
+    cb new Error('Tests failed') if matches[1] != '100'
+    log matches[0]
 
 task 'test', 'Run all tests', -> test onerror
 
