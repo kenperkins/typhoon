@@ -48,7 +48,6 @@ publish = (cb) ->
       cb err
 
   series [
-    build
     test
     tagVersion
     pushGithub
