@@ -99,7 +99,7 @@ module.exports.setDefaultConfigs = function(root, configs) {
   configs.encoding = configs.encoding || 'utf8';
 
   // Default paging is `10`
-  configs.perPage = configs.perPage || 10;
+  configs.perPage = Number(configs.perPage) || 10;
 
   // Default article extension is `'.txt'`
   configs.articlesExt = configs.articlesExt || '.txt'
