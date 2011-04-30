@@ -129,3 +129,5 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
 Typhoon was inspired by [Toto](//github.com/cloudhead/toto) (Ruby) and [Wheat](//github.com/creationix/wheat) (Node.js). Go check them out!
 
 Copyright (c) 2011 Christian Joudrey. See LICENSE for details.
+
+Node.js is an official trademark of Joyent. This module is not formally related to or endorsed by the official Joyent Node.js open source or commercial project.
