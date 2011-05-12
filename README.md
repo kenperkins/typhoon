@@ -112,6 +112,16 @@ One can specify a summary for the article by placing the `<!-- more -->` delimit
     Maecenas justo neque, dictum eget accumsan non, luctus ac lacus.
     Phasellus ac erat metus, et sagittis dolor.
 
+# Article static files
+
+In some situations one may need static files for an article. These are are to be placed within a folder named after the article.
+
+For instance, the static files folder for the article `2011-04-03-lorem-ipsum.txt` is `2011-04-03-lorem-ipsum`.
+
+This folder is to be placed in the `articles/` folder.
+
+All files placed inside the `articles/2011-04-03-lorem-ipsum/` folder can then be accessed through `/2011/04/03/lorem-ipsum/filename`.
+
 # Documentation for Views
 
   Local variables are documented [here](//github.com/cjoudrey/typhoon/blob/master/docs/views.md).
