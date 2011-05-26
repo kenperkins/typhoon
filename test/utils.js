@@ -22,7 +22,7 @@ module.exports = {
     }, '1234');
 
     utils.mustBeDigits(req, res, function(err) {
-      assert.strictEqual(err.message, '404');
+      assert.strictEqual(err, 'route');
     }, '1234a');
   },
 

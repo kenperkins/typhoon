@@ -11,8 +11,8 @@ module.exports.pad = function(i) {
 };
 
 module.exports.mustBeDigits = function(req, res, next, n) {
-  if (!n) return next();
-  if (!n.match(/^[0-9]+$/)) return next(new Error(404));
+  if (typeof(n) === 'undefined') return next();
+  if (!n.match(/^[0-9]+$/)) return next('route');
   next();
 };
 
