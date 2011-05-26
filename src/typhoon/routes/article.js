@@ -16,6 +16,9 @@ module.exports.setup = function(app) {
   app.get('/:year?/:month?/:day?', getArticles, list);
   app.get(/^\/([0-9]{4})\/([0-9]{2})\/([0-9]{2})\/(.*?)\/(.*)$/i, staticFile);
   app.get('/:year/:month/:day/:slug', getArticle, show);
+  app.get('/*', function(req, res, next) {
+    next(new Error(404));
+  });
 };
 
 var getArticles = function(req, res, next) {
