@@ -133,6 +133,7 @@ All files placed inside the `articles/2011-04-03-lorem-ipsum/` folder can then b
 # Blogs using Typhoon
 
 - [http://blog.ht4.ca](http://blog.ht4.ca) ([Source](//github.com/cjoudrey/blog.ht4.ca))
+- [http://blog.clipboard.com/](http://blog.clipboard.com/)
 
 # Mentions
 
